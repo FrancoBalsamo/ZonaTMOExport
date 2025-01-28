@@ -2,14 +2,22 @@
     let allItems = [];
     let page = 1;
 
-    // Actualmente, estos son los elementos sobre los que trabajaremos (leído/abandonado/etc)
-    const selectedElement = document.querySelector(".element-header-bar .element-header-bar-element.active small");
-    const listType = selectedElement ? selectedElement.textContent.trim() : "SinNombre";
+    // Detectar la URL base según el elemento activo
+    const activeElement = document.querySelector(".element-header-bar .element-header-bar-element.active a");
+    const baseUrl = activeElement ? activeElement.href : "https://zonatmo.com/profile/read";
+    const selectedTitle = activeElement
+        ?.querySelector("small.element-header-bar-element-title")
+        ?.textContent.trim() || "SinNombre";
 
-    // Si tenemos muchas páginas, vamos a buscar que todas las que tenga
+    console.log(`Base URL detectada: ${baseUrl}`);
+    console.log(`Lista seleccionada: ${selectedTitle}`);
+
+    // Obtener todos los elementos paginados
     while (true) {
-        console.log(`Cargando página ${page}...`); //imprimimos por consola cada página que tengamos 
-        const response = await fetch(`https://zonatmo.com/profile/read?page=${page}`);
+        console.log(`Cargando página ${page}...`); // Informar la página actual
+
+        // Realizar la petición con la URL base y el número de página
+        const response = await fetch(`${baseUrl}?page=${page}`);
         if (!response.ok) {
             console.error(`Error al cargar la página ${page}`);
             break;
@@ -37,10 +45,10 @@
         page++;
     }
 
-    //Vamos a crear un archivo xls para exportar
-    console.log(`Generando archivo XLS para la lista: ${listType}`);
+    // Generar el archivo XLS
+    console.log(`Generando archivo XLS para la lista: ${selectedTitle}`);
 
-    // Creamos el contenido del archivo XLS
+    // Crear el contenido del archivo XLS
     const rows = [
         ["Título", "Link"], // Encabezados
         ...allItems.map(item => [item.title, item.link]) // Datos
@@ -54,7 +62,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `Lista de ${listType}.xls`;
+    a.download = `Lista de ${selectedTitle}.xls`;
     a.click();
     URL.revokeObjectURL(url);
 
