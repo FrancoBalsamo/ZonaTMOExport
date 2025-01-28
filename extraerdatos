@@ -1,0 +1,62 @@
+(async function () {
+    let allItems = [];
+    let page = 1;
+
+    // Actualmente, estos son los elementos sobre los que trabajaremos (leído/abandonado/etc)
+    const selectedElement = document.querySelector(".element-header-bar .element-header-bar-element.active small");
+    const listType = selectedElement ? selectedElement.textContent.trim() : "SinNombre";
+
+    // Si tenemos muchas páginas, vamos a buscar que todas las que tenga
+    while (true) {
+        console.log(`Cargando página ${page}...`); //imprimimos por consola cada página que tengamos 
+        const response = await fetch(`https://zonatmo.com/profile/read?page=${page}`);
+        if (!response.ok) {
+            console.error(`Error al cargar la página ${page}`);
+            break;
+        }
+
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        // Seleccionar los ítems (nombre/link)
+        const items = [...doc.querySelectorAll(".element.proyect-item")];
+        if (items.length === 0) {
+            console.log("No hay más ítems que cargar.");
+            break;
+        }
+
+        // Extraer los títulos y enlaces
+        items.forEach(item => {
+            const title = item.querySelector(".thumbnail-title h4.text-truncate")?.getAttribute("title")?.trim() || "Sin título";
+            const link = item.querySelector("a")?.getAttribute("href")?.trim() || "Sin enlace";
+            allItems.push({ title, link });
+        });
+
+        console.log(`Página ${page} procesada.`);
+        page++;
+    }
+
+    //Vamos a crear un archivo xls para exportar
+    console.log(`Generando archivo XLS para la lista: ${listType}`);
+
+    // Creamos el contenido del archivo XLS
+    const rows = [
+        ["Título", "Link"], // Encabezados
+        ...allItems.map(item => [item.title, item.link]) // Datos
+    ];
+
+    // Convertir a CSV (compatible con Excel)
+    const csvContent = rows.map(e => e.join("\t")).join("\n");
+
+    // Crear y descargar el archivo
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Lista de ${listType}.xls`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    console.log("Archivo exportado con éxito.");
+})();
