@@ -21,3 +21,11 @@ Durante el proceso de exportación, se nos preguntará dónde queremos guardar e
 Si tienen algún conflicto para visualizar el XLS, les recuerdo y recomiendo que la opción de separación sea solo la de TABULADOR. Así podrán visualizar el archivo de forma correcta
 
 Saludos!
+
+**UDPATE**
+
+Ahora puedes descargar la lista en un formato HTML lo que te permitirá ver la imagen de portada del manga, el nombre y al presionar el nombre se te abrirá en una nueva pestaña el manga!
+
+![image](https://github.com/user-attachments/assets/83167efc-9feb-4bb1-a2ef-80e9fe7cf90e)
+
+![image](https://github.com/user-attachments/assets/4747ee02-080d-4bc4-a384-65d6e3487bc4)
